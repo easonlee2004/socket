@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #define BUFFSIZE 2048
-#define SERVER_IP "192.168.31.12"
+#define SERVER_IP "127.0.0.1" // localhost
 #define SERVER_PORT 16555
 int main()
 {
