@@ -1,28 +1,21 @@
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-#include <sys/socket.h>
-#include <sys/unistd.h>
-#include <sys/types.h>
-#include <sys/errno.h>
-#include <netinet/in.h>
-#include <signal.h>
-#define BUFFSIZE 2048
-#define DEFAULT_PORT 16555 // 指定端口
-#define MAXLINK 2048
-int sockfd, connfd;
-void stopServerRunning(int p)
+#include "server.h"
+
+// http respond
+void setRespond(char *buff)
 {
-    close(sockfd);
-    printf("Close Server\n");
-    exit(0);
+    memset(buff, 0, sizeof(buff));
+    strcat(buff, "HTTP/1.1 200 OK\r\n");
+    strcat(buff, "Connection: close\r\n");
+    strcat(buff, "\r\n");
+    strcat(buff, "Hello!\n");
 }
+
 int main()
 {
     struct sockaddr_in servaddr;
     char buff[BUFFSIZE];
     // socket
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1)
     {
         perror("Failed to create server socket");
@@ -51,9 +44,8 @@ int main()
 
     while(1)
     {
-        signal(SIGINT, stopServerRunning); // ctrl+c停止运行。第二个参数是个句柄，传入自定义停止函数
         // connfd = accept(sockfd)
-        connfd = accept(sockfd, 0, 0);
+        int connfd = accept(sockfd, 0, 0);
         if (connfd == -1)
         {
             perror("Failed to create connect socket");
@@ -65,6 +57,8 @@ int main()
         // recv, 使用客户端连接的connfd接收
         recv(connfd, buff, BUFFSIZE - 1, 0);
         
+        setRespond(buff);
+
         // send
         send(connfd, buff, strlen(buff), 0);
 

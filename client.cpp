@@ -31,6 +31,7 @@ int main()
     if (connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
     {
         perror("Failed to connect");
+        close(sockfd); // 新增代码，当connect出错时需要关闭套接字
         return -1;
     }
 
