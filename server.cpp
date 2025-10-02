@@ -42,26 +42,27 @@ int main()
         exit(1);
     }
 
+    // 基于select的非阻塞实现
     // 读描述符集合
-    fd_set readset;
-    FD_ZERO(&readset);
-    FD_SET(lfd, &readset);
+    fd_set rdset;
+    FD_ZERO(&rdset);
+    FD_SET(lfd, &rdset);
 
     while (1)
     {
         // 每一轮都更新tmp
-        fd_set tmp = readset;
+        fd_set tmp = rdset;
         int ret = select(1024, &tmp, 0, 0, 0);
         // 判断listen fd是否在写集合中
         if (FD_ISSET(lfd, &tmp))
         {
             int cfd = accept(lfd, 0, 0);
-            FD_SET(cfd, &readset);
+            FD_SET(cfd, &rdset);
         }
         // 遍历fd找出可用的cfd
         for (int i = 0; i < 1024; i++)
         {
-            if (i != lfd && FD_ISSET(i, &readset))
+            if (i != lfd && FD_ISSET(i, &rdset))
             {
                 memset(buff, 0, sizeof(buff));
 
@@ -75,7 +76,7 @@ int main()
                 else if (len == 0) // 客户端断开
                 {
                     printf("client closed connection");
-                    FD_CLR(i, &readset);
+                    FD_CLR(i, &rdset);
                     break;
                 }
         
