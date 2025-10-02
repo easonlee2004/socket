@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/errno.h>
 #include <netinet/in.h>
-#include <signal.h>
+#include <sys/select.h>
 #define BUFFSIZE 2048
 #define DEFAULT_PORT 16555 // 指定端口
 #define MAXLINK 2048
